@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "nimbus.host: \"nimbus-$clusterid\"" >> ./conf/storm.yaml
+./bin/storm ui
