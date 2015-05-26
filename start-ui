@@ -1,4 +1,7 @@
 #!/bin/bash
+
+echo "Configure Storm UI..."
+
 if [ -z $ZK_NM ]
   then
     ZK_NM=3
@@ -14,4 +17,10 @@ done
 echo "nimbus.host: \"nimbus-$NBID\"" >> /storm/conf/storm.yaml
 
 echo "storm.zookeeper.root: \"/storm/$NBID\"" >> /storm/conf/storm.yaml
+
+echo "Finish storm configuration."
+echo "[Config] The UI configuration yaml content:-------------------"
+cat /storm/conf/storm.yaml
+echo "[Config] -------------------------------------------------------------"
+
 ./bin/storm ui
