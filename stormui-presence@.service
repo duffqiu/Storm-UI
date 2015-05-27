@@ -1,0 +1,17 @@
+[Unit]
+Description=Storm UI Presence Service
+BindsTo=storm-ui@%i.service
+After=storm-ui@%i.service
+
+[Service]
+Restart=always
+RestartSec=30
+EnvironmentFile=/etc/environment
+Environment="STORM_UI_PORT=8001"
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/org/duffqiu/cluster/stormui-%i '{"host":"${COREOS_PRIVATE_IPV4}","port":${STORM_UI_PORT}}'
+ExecStartPre=/usr/bin/etcdctl set --ttl 60 /skydns/org/duffqiu/cluster/storm%i/stormui '{"host":"${COREOS_PRIVATE_IPV4}","port":${STORM_UI_PORT}}'
+ExecStart=/usr/bin/echo "Set storm stormui-%i in skydns2"
+
+[X-Fleet]
+MachineOf=storm-ui@%i.service
+MachineMetadata=role=back

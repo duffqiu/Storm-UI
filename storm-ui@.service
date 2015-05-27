@@ -1,0 +1,30 @@
+[Unit]
+Description=Storm UI service unit
+After=docker.service
+Wants=stormui-presence@%i.service
+
+[Service]
+Restart=always
+RestartSec=15
+TimeoutSec=120
+EnvironmentFile=/etc/environment
+Environment="DOMAIN_NAME=cluster.duffqiu.org"
+ExecStartPre=-/usr/bin/docker kill stormui-%i
+ExecStartPre=-/usr/bin/docker rm  stormui-%i
+ExecStartPre=-/usr/bin/docker pull duffqiu/storm-ui:latest
+ExecStart=/usr/bin/docker run  \
+                              --name stormui-%i \
+                              -e ZK_NM=3 \
+                              -e STORM_HN=${COREOS_PRIVATE_IPV4} \
+                              -e NBID=%i \
+                              --hostname stormui-%i.${DOMAIN_NAME} \
+                              --dns-search ${DOMAIN_NAME} \
+                              --dns ${COREOS_PRIVATE_IPV4} \
+                              -p ${COREOS_PRIVATE_IPV4}:8001:8080 \
+                              -v /mirror/storm/ui/logs:/storm/logs \
+                              duffqiu/storm-ui:latest
+ExecStop=-/usr/bin/docker stop stormui-%i
+
+[X-Fleet]
+X-Conflicts=storm-ui@*.service
+MachineMetadata=role=back
